@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hoa Khuong 2 Primary School - English Speaking Grade 5</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{font-family:Arial, sans-serif;background:#f2f7ff;margin:0;padding:10px}
+.container{max-width:900px;margin:auto;background:#fff;padding:15px;border-radius:10px}
+h1{text-align:center;color:#1e90ff}
+label{font-weight:bold}
+input,select,textarea,button{width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #ccc}
+textarea{height:90px}
+button{background:#1e90ff;color:white;font-size:16px;cursor:pointer}
+button:hover{background:#0c70d4}
+.box{border:2px dashed #1e90ff;padding:10px;border-radius:8px;margin-top:10px}
+.stars{font-size:22px;color:gold;text-align:center}
+.certificate{margin-top:20px;border:3px solid gold;padding:15px;border-radius:10px}
+.cert-title{text-align:center;color:orange;font-size:20px;font-weight:bold}
+.correct{color:green;font-weight:bold}
+.wrong{color:red;font-weight:bold}
+@media(max-width:600px){h1{font-size:20px}}
+</style>
+</head>
+
+<body>
+<div class="container">
+<h1>🌟 Hoa Khuong 2 Primary School 🌟</h1>
+
+<label>Student name</label>
+<input id="name" placeholder="Enter name">
+
+<label>Class</label>
+<input id="class" placeholder="5/1">
+
+<label>Mode</label>
+<select id="mode">
+<option>Speaking by Units</option>
+<option>Free Speaking</option>
+</select>
+
+<label>Choose Unit</label>
+<select id="unit"></select>
+
+<div class="box">
+<b>AI Sample (Kids English)</b>
+<p id="sample"></p>
+<button onclick="playSample()">🔊 Sample</button>
+</div>
+
+<div class="box">
+<b>Student Speaking</b>
+<textarea id="studentText" placeholder="Speak or type here..."></textarea>
+<button onclick="startRecord()">🎤 Record</button>
+<button onclick="check()">✅ Check & Feedback</button>
+<p id="feedback"></p>
+<div class="stars" id="stars"></div>
+</div>
+
+<div class="certificate" id="cert" style="display:none">
+<div class="cert-title">CERTIFICATE OF ENGLISH SPEAKING</div>
+<p style="text-align:center">
+This certificate is proudly presented to<br><br>
+<b id="cname"></b><br>
+Class: <span id="cclass"></span><br><br>
+For successfully completing<br>
+<b id="cunit"></b><br><br>
+⭐⭐⭐⭐⭐<br>
+Keep practising English every day!
+</p>
+</div>
+
+</div>
+
+<script>
+const units = [
+["Unit 1 – All about me","My name is Minh. I’m in class 5/1. I live in the countryside. I like swimming."],
+["Unit 2 – Our homes","I live in a house. My address is 65 Le Loi Street."],
+["Unit 3 – My foreign friends","He is Vietnamese. He is friendly and helpful."],
+["Unit 4 – Our free-time activities","I like reading books and playing table tennis."],
+["Unit 5 – My future job","I’d like to be a teacher because I like teaching children."],
+["Unit 6 – Our school rooms","Go upstairs, go past the library and turn right."],
+["Unit 7 – Our favourite school activities","She likes reading books because it’s interesting."],
+["Unit 8 – In our classroom","The crayons are on the table. It’s Huong’s pen."],
+["Unit 9 – Our outdoor activities","We were at the campsite. We danced around the campfire."],
+["Unit 10 – Our school trip","They visited the old buildings at Ba Na Hills."],
+["Unit 11 – Family time","We took a boat trip and ate seafood."],
+["Unit 12 – Our Tet holiday","I will decorate the house and visit my grandparents."],
+["Unit 13 – Our special days","We’ll have a party and drink apple juice."],
+["Unit 14 – Staying healthy","She does yoga and eats healthy food."],
+["Unit 15 – Our health","I have a headache. You should have a rest."],
+["Unit 16 – Seasons and weather","It’s hot in summer. I wear a T-shirt."],
+["Unit 17 – Stories for children","She sang beautifully."],
+["Unit 18 – Means of transport","You can get there by bus."],
+["Unit 19 – Places of interest","Hoi An Old Town is beautiful."],
+["Unit 20 – Our summer holidays","I’m going to visit Phu Quoc Island."]
+];
+
+const unitSelect=document.getElementById("unit");
+units.forEach((u,i)=>{
+ let opt=document.createElement("option");
+ opt.value=i;
+ opt.text=u[0];
+ unitSelect.add(opt);
+});
+unitSelect.onchange=()=>sample.innerText=units[unitSelect.value][1];
+sample.innerText=units[0][1];
+
+function playSample(){
+ let msg=new SpeechSynthesisUtterance(sample.innerText);
+ msg.lang="en-GB";
+ msg.rate=0.9;
+ speechSynthesis.speak(msg);
+}
+
+function startRecord(){
+ let rec=new (window.SpeechRecognition||window.webkitSpeechRecognition)();
+ rec.lang="en-GB";
+ rec.onresult=e=>studentText.value=e.results[0][0].transcript;
+ rec.start();
+}
+
+function check(){
+ let target=units[unitSelect.value][1].toLowerCase();
+ let user=studentText.value.toLowerCase();
+ let wordsT=target.split(" ");
+ let wordsU=user.split(" ");
+ let wrong=[];
+ wordsT.forEach(w=>{
+  if(!wordsU.includes(w)) wrong.push(w);
+ });
+ feedback.innerHTML= wrong.length==0
+ ? "<span class='correct'>Great job! Perfect pronunciation 🎉</span>"
+ : "<span class='wrong'>Please practise again these words: "+wrong.join(", ")+"</span>";
+ stars.innerText= wrong.length==0?"⭐⭐⭐⭐⭐":"⭐⭐⭐";
+ cname.innerText=name.value;
+ cclass.innerText=class.value;
+ cunit.innerText=units[unitSelect.value][0];
+ cert.style.display="block";
+ let praise=new SpeechSynthesisUtterance(wrong.length==0?"Excellent! Keep going!":"Good try! Let’s practise again!");
+ praise.lang="en-GB";
+ speechSynthesis.speak(praise);
+}
+</script>
+</body>
+</html>
